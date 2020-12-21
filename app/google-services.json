@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "721017966430",
+    "firebase_url": "https://todo-app-bbeb4-default-rtdb.firebaseio.com",
     "project_id": "todo-app-bbeb4",
     "storage_bucket": "todo-app-bbeb4.appspot.com"
   },

@@ -2,7 +2,7 @@ package com.apolis.todoapp.models
 
 import java.io.Serializable
 
-data class ToDoItem (
+data class Todo (
     var itemId: String? = null,
     var itemText: String? = null,
     var done: Boolean? = false

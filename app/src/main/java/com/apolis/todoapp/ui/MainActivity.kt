@@ -14,10 +14,11 @@ import com.apolis.todoapp.models.Todo
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ItemRowListener {
 
     lateinit var database: DatabaseReference
     lateinit var itemAdapter: TodoItemAdapter
+    lateinit var itemListener: ValueEventListener
     private var itemList: ArrayList<Todo> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateList() {
-        database.addValueEventListener(object: ValueEventListener {
+        itemListener = database.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // Get post object and use the values to update the UI
                 itemList.clear()
@@ -110,5 +111,21 @@ class MainActivity : AppCompatActivity() {
         dialog?.dismiss()
         Log.d("ABC", "Inside onSubmit()")
         Toast.makeText(this, "Item saved with ID ${todoItem.itemId}", Toast.LENGTH_SHORT)
+    }
+
+    // Listener removed when user is not actively interacting with the app
+    override fun onDestroy() {
+        super.onDestroy()
+        database.removeEventListener(itemListener)
+    }
+
+    override fun modifyItemState(itemId: String, isDone: Boolean) {
+        val itemReference = database.child(Todo.FIREBASE_ITEM).child(itemId)
+        itemReference.child("done").setValue(isDone)
+    }
+
+    override fun onItemDelete(itemId: String) {
+        val itemReference = database.child(Todo.FIREBASE_ITEM).child(itemId)
+        itemReference.removeValue()
     }
 }

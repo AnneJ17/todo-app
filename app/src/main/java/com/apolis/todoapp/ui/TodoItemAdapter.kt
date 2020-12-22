@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.apolis.todoapp.R
 import com.apolis.todoapp.helpers.d
-import com.apolis.todoapp.helpers.inflate
 import com.apolis.todoapp.models.Todo
 import kotlinx.android.synthetic.main.row_items.view.*
 
 class TodoItemAdapter(var context: Context) : RecyclerView.Adapter<TodoItemAdapter.ViewHolder>(){
 
     private var itemList: ArrayList<Todo> = ArrayList()
+    private var rowListener: ItemRowListener = context as ItemRowListener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         var view = LayoutInflater.from(context).inflate(R.layout.row_items, parent, false)
@@ -36,6 +36,14 @@ class TodoItemAdapter(var context: Context) : RecyclerView.Adapter<TodoItemAdapt
             context.d("${todoItem.itemId}, ${todoItem.itemText}")
             itemView.text_view_text.text = todoItem.itemText
             itemView.checkbox_done.isChecked = todoItem.done!!
+
+            itemView.checkbox_done.setOnClickListener {
+                rowListener.modifyItemState(todoItem.itemId!!, !todoItem.done!!)
+            }
+            itemView.button_delete.setOnClickListener {
+                rowListener.onItemDelete(todoItem.itemId!!)
+            }
+
         }
     }
 }

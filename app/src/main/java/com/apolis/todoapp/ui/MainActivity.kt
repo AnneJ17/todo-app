@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
+import android.widget.Toolbar
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.apolis.todoapp.R
@@ -13,6 +14,7 @@ import com.apolis.todoapp.helpers.d
 import com.apolis.todoapp.models.Todo
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.custom_toolbar.*
 
 class MainActivity : AppCompatActivity(), ItemRowListener {
 
@@ -29,11 +31,18 @@ class MainActivity : AppCompatActivity(), ItemRowListener {
     }
 
     private fun init() {
-        setUp()
+        setUpToolbar()
+        setUpActivity()
         onClick()
     }
 
-    private fun setUp() {
+    private fun setUpToolbar() {
+        toolbar.title = "Todo"
+        toolbar.setTitleTextAppearance(this, R.style.LittleFishTextAppearance)
+        setSupportActionBar(toolbar)
+    }
+
+    private fun setUpActivity() {
         database = FirebaseDatabase.getInstance().reference
         itemAdapter = TodoItemAdapter(this)
         recycler_view.layoutManager = LinearLayoutManager(this)

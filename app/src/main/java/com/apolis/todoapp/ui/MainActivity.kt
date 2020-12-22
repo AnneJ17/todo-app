@@ -7,15 +7,18 @@ import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.apolis.todoapp.R
+import com.apolis.todoapp.helpers.d
 import com.apolis.todoapp.models.Todo
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var database: DatabaseReference
+    lateinit var itemAdapter: TodoItemAdapter
+    private var itemList: ArrayList<Todo> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,12 +28,62 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        database = FirebaseDatabase.getInstance().reference
+        setUp()
+        onClick()
+    }
 
+    private fun setUp() {
+        database = FirebaseDatabase.getInstance().reference
+        itemAdapter = TodoItemAdapter(this)
+        recycler_view.layoutManager = LinearLayoutManager(this)
+        recycler_view.adapter = itemAdapter
+
+        updateList()
+    }
+
+    private fun updateList() {
+        database.addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // Get post object and use the values to update the UI
+                itemList.clear()
+                addDataToList(dataSnapshot)
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                d(databaseError.toException().toString())
+            }
+        })
+    }
+
+    private fun addDataToList(dataSnapshot: DataSnapshot) {
+        val items = dataSnapshot.children.iterator()
+        // Check id database contains any collection
+        if (items.hasNext()) {
+            val toDoListIndex = items.next()
+            val itemsIterator = toDoListIndex.children.iterator()
+
+            //check if the collection has any to do items or not
+            while (itemsIterator.hasNext()) {
+                //get current item
+                val currentItem = itemsIterator.next()
+                val todoItem = Todo()
+                //get current data in a map
+                val map = currentItem.value as HashMap<String, Any>
+                //key will return Firebase ID
+                todoItem.itemId = currentItem.key
+                todoItem.done = map.get("done") as Boolean?
+                todoItem.itemText = map.get("itemText") as String?
+                itemList!!.add(todoItem);
+            }
+        }
+        itemAdapter.setData(itemList)
+        d(itemList.size.toString())
+
+    }
+
+    private fun onClick() {
         fab_button_add.setOnClickListener {
             addNewItemDialog()
         }
-
     }
 
     private fun addNewItemDialog() {
@@ -40,7 +93,6 @@ class MainActivity : AppCompatActivity() {
         alert.setTitle("Enter To Do Item Text")
         alert.setView(itemEditText)
         alert.setPositiveButton("Submit") { dialog, positiveButton ->
-            Toast.makeText(this, "Here", Toast.LENGTH_SHORT).show()
             onSubmit(itemEditText, dialog)
         }
         alert.show()

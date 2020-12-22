@@ -1,4 +1,4 @@
-package com.apolis.todoapp
+package com.apolis.todoapp.ui
 
 import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.apolis.todoapp.R
 import com.apolis.todoapp.models.Todo
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -55,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         //then, we used the reference to set the value on that ID
         newItem.setValue(todoItem)
         dialog?.dismiss()
-        Log.d("ABC", "Failed to store in db")
+        Log.d("ABC", "Inside onSubmit()")
         Toast.makeText(this, "Item saved with ID ${todoItem.itemId}", Toast.LENGTH_SHORT)
     }
 }

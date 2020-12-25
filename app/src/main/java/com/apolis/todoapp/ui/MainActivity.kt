@@ -8,6 +8,7 @@ import android.widget.EditText
 import android.widget.Toast
 import android.widget.Toolbar
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.apolis.todoapp.R
 import com.apolis.todoapp.helpers.d
